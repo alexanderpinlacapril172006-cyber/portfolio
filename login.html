@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Astral Archive Terminal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source src="https://res.cloudinary.com/dqzwt5h4z/video/upload/v1777049214/bg_video_xqihzy.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="login-container">
+
+        <div class="glass-login text-center">
+
+            <h3 class="mb-4" style="color: var(--sr-gold); letter-spacing: 3px;">SYSTEM LOGIN</h3>
+
+            <div id="login_error" class="login-error" style="display: none;"></div>
+
+            <form id="login_form">
+                <div class="mb-3 text-start">
+
+                    <label class="small text-secondary text-uppercase">Username</label>
+                    <input type="text" id="username" class="form-control" required>
+
+                </div>
+
+                <div class="mb-4 text-start">
+                    <label class="small text-secondary text-uppercase">Access Key</label>
+                    <div class="position-relative">
+                        <input type="password" id="password" class="form-control" required>
+                        <button type="button" id="toggle-password" class="btn position-absolute end-0 top-50 translate-middle-y" style="background: transparent; border: none; color: var(--sr-gold); opacity: 0.6; padding: 5px 10px; z-index: 10; font-size: 0.85rem;" title="Toggle password visibility">
+                            <span id="password-text">Show</span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <button type="submit" class="btn btn-gold w-100 py-2">INITIALIZE ARCHIVE</button>
+            </form>
+
+            <div class="mt-4">
+                <a href="index.html" class="text-secondary small text-decoration-none">← Return to Front-End</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Show/Hide Password Toggle
+        const togglePasswordBtn = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        const passwordText = document.getElementById('password-text');
+
+        togglePasswordBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordText.textContent = 'Hide';
+            } else {
+                passwordInput.type = 'password';
+                passwordText.textContent = 'Show';
+            }
+        });
+    </script>
+</body>
+</html>

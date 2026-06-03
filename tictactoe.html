@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tic Tac Toe</title>
+
+  <style>
+    /* Center everything on the page */
+    body {
+      background-color: #f0f4ff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+
+    /* Main title */
+    h1 {
+      font-size: 36px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    /* Shows whose turn it is, or the winner */
+    #message {
+      font-size: 20px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    /* The 3x3 game board using CSS Grid */
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px); /* 3 columns, each 100px wide */
+      grid-template-rows:    repeat(3, 100px); /* 3 rows,    each 100px tall */
+      gap: 8px;                                /* space between cells */
+      justify-content: center;                 /* center the grid */
+      margin-bottom: 20px;
+    }
+
+    /* Each individual square */
+    .cell {
+      background-color: white;
+      border: 2px solid #aaa;
+      border-radius: 8px;
+      font-size: 48px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Change color on hover only if the cell is empty */
+    .cell:hover {
+      background-color: #e8eeff;
+    }
+
+    /* X is blue, O is red */
+    .cell.x { color: #2563eb; }
+    .cell.o { color: #dc2626; }
+
+    /* Highlight the winning cells in yellow */
+    .cell.winner {
+      background-color: #fef08a;
+      border-color: #ca8a04;
+    }
+
+    /* The restart button */
+    #restartBtn {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #restartBtn:hover {
+      background-color: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tic Tac Toe</h1>
+  <p id="message">Player X's turn</p>
+
+  <!-- The game board: 9 cells, each with a data-index so JS knows which one was clicked -->
+  <div id="board">
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+
+  <button id="restartBtn">Restart Game</button>
+
+  <script>
+    // ─── Game State ───────────────────────────────────────────────
+    // board holds the value of each cell: null = empty, 'X', or 'O'
+    let board = [null, null, null,
+                 null, null, null,
+                 null, null, null];
+
+    let currentPlayer = 'X'; // X always goes first
+    let gameOver = false;    // becomes true when someone wins or it's a draw
+
+    // All the ways a player can win (by cell index)
+    const winningCombos = [
+      [0, 1, 2], // top row
+      [3, 4, 5], // middle row
+      [6, 7, 8], // bottom row
+      [0, 3, 6], // left column
+      [1, 4, 7], // middle column
+      [2, 5, 8], // right column
+      [0, 4, 8], // diagonal top-left to bottom-right
+      [2, 4, 6], // diagonal top-right to bottom-left
+    ];
+
+    // ─── Get references to HTML elements ─────────────────────────
+    const cells      = document.querySelectorAll('.cell'); // all 9 cells
+    const message    = document.getElementById('message');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // ─── Add a click listener to every cell ──────────────────────
+    cells.forEach(function(cell) {
+      cell.addEventListener('click', function() {
+        handleCellClick(cell);
+      });
+    });
+
+    // ─── What happens when a cell is clicked ─────────────────────
+    function handleCellClick(cell) {
+      const index = cell.dataset.index; // which cell was clicked (0–8)
+
+      // Do nothing if the game is over or the cell is already taken
+      if (gameOver || board[index] !== null) {
+        return;
+      }
+
+      // Mark the board array and show the symbol in the cell
+      board[index] = currentPlayer;
+      cell.textContent = currentPlayer;
+      cell.classList.add(currentPlayer.toLowerCase()); // adds class 'x' or 'o'
+
+      // Check if someone just won
+      const winCombo = getWinningCombo();
+      if (winCombo) {
+        // Highlight the three winning cells
+        winCombo.forEach(function(i) {
+          cells[i].classList.add('winner');
+        });
+        message.textContent = 'Player ' + currentPlayer + ' wins! 🎉';
+        gameOver = true;
+        return;
+      }
+
+      // Check if the board is full (draw)
+      if (board.every(function(cell) { return cell !== null; })) {
+        message.textContent = "It's a draw!";
+        gameOver = true;
+        return;
+      }
+
+      // Switch to the other player
+      currentPlayer = (currentPlayer === 'X') ? 'O' : 'X';
+      message.textContent = 'Player ' + currentPlayer + "'s turn";
+    }
+
+    // ─── Check if the current player has won ─────────────────────
+    // Returns the winning combo array if found, or null if not
+    function getWinningCombo() {
+      for (let i = 0; i < winningCombos.length; i++) {
+        const [a, b, c] = winningCombos[i];
+
+        // A win means all three cells hold the same player's mark
+        if (board[a] === currentPlayer &&
+            board[b] === currentPlayer &&
+            board[c] === currentPlayer) {
+          return winningCombos[i];
+        }
+      }
+      return null; // no winner yet
+    }
+
+    // ─── Restart the game ────────────────────────────────────────
+    restartBtn.addEventListener('click', function() {
+      // Reset the board array
+      board = [null, null, null,
+               null, null, null,
+               null, null, null];
+
+      currentPlayer = 'X';
+      gameOver = false;
+      message.textContent = "Player X's turn";
+
+      // Clear every cell's text and CSS classes
+      cells.forEach(function(cell) {
+        cell.textContent = '';
+        cell.className = 'cell'; // back to just 'cell', removes x/o/winner
+      });
+    });
+  </script>
+
+</body>
+</html>

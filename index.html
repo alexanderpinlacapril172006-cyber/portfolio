@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Astral Express</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { 
+            --sr-navy: #0c1220; 
+            --sr-gold: #c9a55c; 
+        }
+        
+        body { background: var(--sr-navy); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; margin: 0; padding: 0; }
+        
+        .video-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; filter: brightness(60%); }
+
+        .entrance-container { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            text-align: center; 
+            position: relative; 
+            z-index: 1;
+        }
+
+        .glitch-text { 
+            font-size: 0.9rem; 
+            letter-spacing: 3px; 
+            color: #c9a55c; 
+            margin-bottom: 20px; 
+            text-transform: uppercase; 
+        }
+
+        .display-1 { 
+            font-weight: bold; 
+            letter-spacing: 8px; 
+            margin: 20px 0; 
+            font-size: 4rem; 
+        }
+
+        .lead { 
+            font-size: 1.2rem; 
+            letter-spacing: 2px; 
+            margin-bottom: 30px; 
+            color: #aaa; 
+        }
+
+        .enter-btn { 
+            display: inline-block; 
+            padding: 12px 40px; 
+            background: transparent; 
+            color: var(--sr-gold); 
+            text-decoration: none; 
+            font-weight: bold; 
+            letter-spacing: 2px; 
+            border-radius: 5px; 
+            transition: 0.3s; 
+            border: 2px solid var(--sr-gold);
+        }
+
+        .enter-btn:hover { 
+            background: var(--sr-gold); 
+            color: var(--sr-navy); 
+            transform: scale(1.05); 
+        }
+
+        .wallpaper-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            background: rgba(201, 165, 92, 0.2);
+            border: 2px solid var(--sr-gold);
+            color: var(--sr-gold);
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wallpaper-toggle:hover {
+            background: rgba(201, 165, 92, 0.4);
+            box-shadow: 0 0 20px rgba(201, 165, 92, 0.3);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+<button class="wallpaper-toggle" id="wallpaper-toggle" title="Switch Wallpaper">⟲</button>
+
+<div class="video-background">
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="https://res.cloudinary.com/dqzwt5h4z/video/upload/v1777049239/entrance_bg_jshz85.mp4" type="video/mp4">
+    </video>
+</div>
+
+<div class="entrance-container">
+    <p class="glitch-text">Data Archive Loading...</p>
+    <h1 class="display-1 fw-bold">ALEXANDER PINLAC</h1>
+    <p class="lead">System: Star Rail Protocol v2.0</p>
+    <a href="indexhome.html" class="enter-btn">ENTER ARCHIVE</a>
+
+</div>
+
+<audio id="entrance-music" autoplay loop muted preload="auto">
+    <source src="assets/audio/star_rail_theme.mp3" type="audio/mpeg">
+</audio>
+
+<script src="app.js"></script>
+<script>
+// Wallpaper switcher
+const wallpaperToggle = document.getElementById("wallpaper-toggle");
+const bgVideo = document.getElementById("bg-video");
+const videoSource = bgVideo.querySelector("source");
+
+const backgrounds = [
+    { name: "<", url: "https://res.cloudinary.com/dqzwt5h4z/video/upload/v1777049239/entrance_bg_jshz85.mp4" },
+    { name: ">", url: "https://res.cloudinary.com/djfro5qb8/video/upload/v1779695412/phainon_bg_egpjbk_tdapsv.mp4" }
+];
+
+let currentBgIndex = localStorage.getItem("currentBg") ? parseInt(localStorage.getItem("currentBg")) : 0;
+
+function loadBackground(index) {
+    if (index >= backgrounds.length) index = 0;
+    currentBgIndex = index;
+    localStorage.setItem("currentBg", index);
+    videoSource.src = backgrounds[index].url;
+    bgVideo.load();
+    bgVideo.play();
+    wallpaperToggle.textContent = ` ${backgrounds[index].name.toUpperCase()}`;
+}
+
+wallpaperToggle.addEventListener("click", () => {
+    currentBgIndex = (currentBgIndex + 1) % backgrounds.length;
+    loadBackground(currentBgIndex);
+});
+
+// Initialize on load
+window.addEventListener("load", () => {
+    loadBackground(currentBgIndex);
+});
+
+const audio = document.getElementById("entrance-music");
+
+audio.play().then(() => {
+    console.log("Muted autoplay started");
+
+    setTimeout(() => {
+        audio.muted = false;
+        audio.volume = 0.7;
+    }, 1500);
+}).catch(err => {
+    console.log("Autoplay prevented, waiting for user interaction");
+    document.addEventListener('click', () => {
+        audio.muted = false;
+        audio.volume = 0.7;
+        audio.play();
+    }, { once: true });
+});
+</script>
+</body>
+
+</html>

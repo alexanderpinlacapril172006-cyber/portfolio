@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Terminal | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { 
+            --sr-navy: #0c1220; 
+            --sr-gold: #c9a55c; 
+            --glass: rgba(22, 31, 50, 0.85); 
+            --nav-hover: rgba(201, 165, 92, 0.2);
+        }
+        
+        body { background: var(--sr-navy); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        
+        .video-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        #bg-video { width: 100%; height: 100%; object-fit: cover; filter: brightness(30%); }
+
+        .glass-card { background: rgba(22, 31, 50, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(201, 165, 92, 0.3); border-radius: 15px; margin-bottom: 25px; padding: 25px; }
+        .form-control { background: rgba(0,0,0,0.4); color: white; border: 1px solid rgba(201,165,92,0.2); margin-bottom: 10px; }
+        .form-control:focus { background: rgba(0,0,0,0.6); color: white; border-color: var(--sr-gold); box-shadow: none; }
+        label { color: var(--sr-gold); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-gold { background: var(--sr-gold); color: var(--sr-navy); font-weight: bold; }
+        .skill-list-item { background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(201, 165, 92, 0.2); transition: 0.3s; min-height: 50px; }
+        .skill-list-item:hover { background: rgba(201, 165, 92, 0.1); border-color: rgba(201, 165, 92, 0.4); }
+        .skill-list-item img { margin-right: 10px; width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+        .skill-list-item span { flex: 1; display: flex; align-items: center; }
+        #skills_list { word-wrap: break-word; word-break: break-word; }
+        .btn-delete-skill { background: transparent; border: 2px solid #ff6666; color: #ff6666; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 1.2rem; font-weight: bold; transition: 0.2s; margin-left: 10px; }
+        .btn-delete-skill:hover { background: #ff6666; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="bg-video">
+            <source src="https://res.cloudinary.com/dqzwt5h4z/video/upload/v1777049087/admin_yzx97c.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <nav class="navbar navbar-dark px-4 mb-4" style="background: rgba(0,0,0,0.7); border-bottom: 2px solid var(--sr-gold);">
+        <span class="navbar-brand fw-bold">MANAGEMENT TERMINAL v2.1</span>
+        <div class="ms-auto">
+            <a href="indexhome.html" class="btn btn-outline-info btn-sm me-2">LIVE SITE</a>
+            <a href="login.html" class="btn btn-outline-danger btn-sm">LOGOUT</a>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        <div id="message" class="alert" style="display: none; border-radius: 10px;"></div>
+
+        <audio id="admin-music" autoplay loop preload="auto">
+            <source src="assets/audio/Flow%20Experience.mp3" type="audio/mpeg">
+        </audio>
+
+        <div class="row">
+            <!-- LEFT COLUMN -->
+            <div class="col-lg-5">
+                <!-- I. EDIT ABOUT ME -->
+                <div class="glass-card">
+                    <h6 class="mb-3" style="color: var(--sr-gold);">I. EDIT ABOUT ME</h6>
+                    <form id="profile_form">
+                        <label>Full Name</label>
+                        <input type="text" id="profile_name" class="form-control" required>
+                        
+                        <label>Designated Path</label>
+                        <input type="text" id="profile_path" class="form-control" required>
+                        
+                        <label>Lead Bio</label>
+                        <textarea id="bio_lead" class="form-control" rows="2" required></textarea>
+                        
+                        <label>Full Intelligence</label>
+                        <textarea id="full_intelligence" class="form-control" rows="4" required></textarea>
+                        
+                        <button type="button" onclick="updateProfile()" class="btn btn-gold btn-sm w-100">UPDATE ARCHIVE</button>
+                    </form>
+                </div>
+
+                <!-- II. MANAGE SKILLS -->
+                <div class="glass-card">
+                    <h6 class="mb-3" style="color: var(--sr-gold);">II. MANAGE SKILLS</h6>
+                    <form id="skill_form" class="mb-4">
+                        <div class="row g-2">
+                            <div class="col-12"><input type="text" id="skill_name" class="form-control mb-0" placeholder="Skill Name" required></div>
+                        </div>
+                        <label class="mt-2">Skill Icon</label>
+                        <input type="file" id="skill_icon" class="form-control mb-2" required>
+                        <button type="button" onclick="addSkill()" class="btn btn-gold btn-sm w-100">ADD SKILL</button>
+                    </form>
+
+                    <label class="mb-2">CURRENT ACTIVE SKILLS</label>
+                    <div id="skills_list" style="max-height: 200px; overflow-y: auto; overflow-x: hidden;">
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-7">
+
+                <div class="glass-card">
+                    <h6 class="mb-3" style="color: var(--sr-gold);">III. UPLOAD NEW MEMORY (PROJECT)</h6>
+                    <form id="project_form">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Project Title</label>
+                                <input type="text" id="project_title" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label>External Link</label>
+                                <input type="text" id="project_link" class="form-control" required>
+                            </div>
+                        </div>
+                        <label>Description</label>
+                        <textarea id="project_description" class="form-control" rows="2" required></textarea>
+                        
+                        <label>Project Thumbnail</label>
+                        <input type="file" id="project_image" class="form-control" required>
+                        
+                        <button type="button" onclick="addProject()" class="btn btn-gold btn-sm w-100 mt-2">ARCHIVE PROJECT</button>
+                    </form>
+                    <div style="margin-top:12px;">
+                        <button type="button" onclick="resetProjects()" class="btn btn-outline-danger btn-sm w-100">RESET PROJECTS (EMPTY)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="storage.js"></script>
+    <script src="admin.js"></script>
+    <script>
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
